@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create fair tennis groups across multiple rounds while minimizing repeat groupmates.">
+  <meta name="theme-color" content="#17362b"><title>Rally Mixer — Fair tennis groups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css"><script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="#top" aria-label="Rally Mixer home"><span class="brand-mark">RM</span><span>Rally Mixer</span></a><span class="header-note">Fair groups. Better games.</span></header>
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title"><div><p class="eyebrow">Tennis group generator</p><h1 id="page-title">Mix the players.<br><em>Keep it fair.</em></h1><p class="intro">Build balanced groups for every round while keeping repeat groupmates to a minimum.</p></div><div class="court-art" aria-hidden="true"><span class="ball"></span><span class="court-label">LET'S<br>PLAY</span></div></section>
+    <section class="planner" aria-label="Schedule builder"><form id="schedule-form" novalidate><div class="form-grid">
+      <div><div class="field-heading"><label for="players">Players</label><span id="player-count" class="count-badge">0 players</span></div><textarea id="players" rows="9" placeholder="Alex&#10;Blake&#10;Casey&#10;Devon&#10;Emery&#10;Frankie&#10;Gray&#10;Harper" aria-describedby="players-help form-error"></textarea><p id="players-help" class="field-help">Enter one name per line, or separate names with commas.</p></div>
+      <div class="settings">
+        <div><label for="group-size">Players per group</label><div class="stepper"><button type="button" class="step-button" data-step="group-size" data-change="-1" aria-label="Decrease players per group">−</button><input id="group-size" type="number" min="2" max="99" value="4" inputmode="numeric"><button type="button" class="step-button" data-step="group-size" data-change="1" aria-label="Increase players per group">+</button></div><p class="field-help">Groups stay as even as possible.</p></div>
+        <div><label for="rounds">Number of rounds</label><div class="stepper"><button type="button" class="step-button" data-step="rounds" data-change="-1" aria-label="Decrease rounds">−</button><input id="rounds" type="number" min="1" max="30" value="3" inputmode="numeric"><button type="button" class="step-button" data-step="rounds" data-change="1" aria-label="Increase rounds">+</button></div><p class="field-help">Each player appears once per round.</p></div>
+        <button class="generate-button" type="submit"><span>Generate schedule</span><span aria-hidden="true">→</span></button><p id="form-error" class="error-message" role="alert"></p>
+      </div>
+    </div></form></section>
+    <section id="results" class="results" aria-live="polite" hidden><div class="results-heading"><div><p class="eyebrow">Your match plan</p><h2>Ready to rally</h2><p id="schedule-summary" class="schedule-summary"></p></div><div class="result-actions"><button id="reshuffle" class="secondary-button" type="button">↻ Shuffle again</button><button id="copy" class="secondary-button" type="button">Copy schedule</button><button id="print" class="secondary-button" type="button">Print</button></div></div><div id="quality-note" class="quality-note"></div><div id="rounds-output" class="rounds-grid"></div></section>
+  </main>
+  <footer><span>Rally Mixer</span><span>Made for social tennis</span></footer>
+</body>
+</html>
