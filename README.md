@@ -1,13 +1,14 @@
 # Rally Mixer
 
-A responsive tennis group generator that creates multiple rounds while minimizing repeated groupmates.
+A responsive tennis scheduler that fills available courts with full groups, rotates sit-outs fairly, and minimizes repeated groupmates.
 
 ## Features
 
 - Paste names one per line or separated by commas
-- Choose any target group size (default: 4)
-- Choose 1–30 rounds
-- Evenly distribute totals that do not divide cleanly
+- Choose players per group (default: 4), available courts (default: 2), and 1–30 rounds
+- Uses only courts that can be filled with a complete group
+- Rotates sit-outs so a player does not sit again before others have had a turn when one person sits out per round
+- Balances sit-outs across players when multiple people sit each round
 - Search for schedules with the fewest repeated player combinations
 - Copy or print the finished schedule
 - Run entirely in the browser with no account or server
@@ -28,4 +29,4 @@ node test-scheduler.mjs
 
 ## Deploy
 
-The repository is ready for GitHub Pages. In the repository settings, choose **Pages**, deploy from the `main` branch, and use the repository root.
+The repository is hosted on GitHub Pages: <https://mundre.github.io/tennis-doubles-shuffler/>.

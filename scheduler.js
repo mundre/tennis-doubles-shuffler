@@ -13,12 +13,10 @@ export function getDuplicateNames(players) {
   return [...duplicates];
 }
 
-export function calculateGroupSizes(playerCount, targetSize) {
-  if (playerCount < 1) return [];
-  const groupCount = Math.max(1, Math.ceil(playerCount / targetSize));
-  const baseSize = Math.floor(playerCount / groupCount);
-  const remainder = playerCount % groupCount;
-  return Array.from({ length: groupCount }, (_, index) => baseSize + (index < remainder ? 1 : 0));
+export function calculateGroupSizes(playerCount, targetSize, courtCount = Infinity) {
+  if (playerCount < targetSize) return [];
+  const availableGroups = Math.min(Math.floor(playerCount / targetSize), courtCount);
+  return Array.from({ length: availableGroups }, () => targetSize);
 }
 
 function shuffle(items, random) {
@@ -38,8 +36,12 @@ function splitIntoGroups(players, sizes) {
   return groups;
 }
 
-function scoreGroups(groups, pairCounts, previousGroups) {
+function scoreGroups(groups, pairCounts, previousGroups, sitoutCounts) {
   let score = 0;
+  const playing = new Set(groups.flat());
+  for (const [player, count] of sitoutCounts) {
+    if (!playing.has(player)) score += (count + 1) ** 2 * 10000;
+  }
   for (const group of groups) {
     if (previousGroups.has([...group].sort().join("|"))) score += 1000;
     for (let i = 0; i < group.length; i += 1) for (let j = i + 1; j < group.length; j += 1) {
@@ -50,9 +52,9 @@ function scoreGroups(groups, pairCounts, previousGroups) {
   return score;
 }
 
-function improveCandidate(groups, pairCounts, previousGroups) {
+function improveCandidate(groups, pairCounts, previousGroups, sitoutCounts) {
   let best = groups.map((group) => [...group]);
-  let bestScore = scoreGroups(best, pairCounts, previousGroups);
+  let bestScore = scoreGroups(best, pairCounts, previousGroups, sitoutCounts);
   let improved = true;
   while (improved) {
     improved = false;
@@ -60,7 +62,7 @@ function improveCandidate(groups, pairCounts, previousGroups) {
       for (let i = 0; i < best[a].length; i += 1) for (let j = 0; j < best[b].length; j += 1) {
         const candidate = best.map((group) => [...group]);
         [candidate[a][i], candidate[b][j]] = [candidate[b][j], candidate[a][i]];
-        const score = scoreGroups(candidate, pairCounts, previousGroups);
+        const score = scoreGroups(candidate, pairCounts, previousGroups, sitoutCounts);
         if (score < bestScore) { best = candidate; bestScore = score; improved = true; }
       }
     }
@@ -77,20 +79,24 @@ function recordGroups(groups, pairCounts, previousGroups) {
   }
 }
 
-export function generateSchedule(players, targetSize, roundCount, random = Math.random) {
-  const sizes = calculateGroupSizes(players.length, targetSize);
-  const pairCounts = new Map(); const previousGroups = new Set(); const rounds = [];
+export function generateSchedule(players, targetSize, courtCount, roundCount, random = Math.random) {
+  if (players.length < targetSize) throw new RangeError(`At least ${targetSize} players are needed to fill one group.`);
+  const sizes = calculateGroupSizes(players.length, targetSize, courtCount);
+  const pairCounts = new Map(); const previousGroups = new Set(); const sitoutCounts = new Map(players.map((player) => [player, 0])); const rounds = [];
   const attempts = Math.min(1800, Math.max(350, players.length * 90));
   for (let roundIndex = 0; roundIndex < roundCount; roundIndex += 1) {
     let best = null;
     for (let attempt = 0; attempt < attempts; attempt += 1) {
-      const candidate = improveCandidate(splitIntoGroups(shuffle(players, random), sizes), pairCounts, previousGroups);
+      const candidate = improveCandidate(splitIntoGroups(shuffle(players, random), sizes), pairCounts, previousGroups, sitoutCounts);
       if (!best || candidate.score < best.score || (candidate.score === best.score && random() < 0.12)) best = candidate;
-      if (best.score === 0) break;
+      if (best.score <= 0) break;
     }
-    rounds.push(best.groups); recordGroups(best.groups, pairCounts, previousGroups);
+    const playingPlayers = new Set(best.groups.flat());
+    const sitouts = players.filter((player) => !playingPlayers.has(player));
+    rounds.push({ groups: best.groups, sitouts }); recordGroups(best.groups, pairCounts, previousGroups);
+    for (const player of sitouts) sitoutCounts.set(player, sitoutCounts.get(player) + 1);
   }
-  return { rounds, pairCounts, groupSizes: sizes };
+  return { rounds, pairCounts, groupSizes: sizes, sitoutCounts };
 }
 
 export function getScheduleStats(pairCounts) {
