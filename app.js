@@ -22,8 +22,8 @@ function validate() {
   const duplicates = getDuplicateNames(players);
   if (players.length < 2) return { error: "Add at least two players to make groups." };
   if (duplicates.length) return { error: `Each player needs a unique name. Check: ${duplicates.join(", ")}.` };
-  if (!Number.isInteger(groupSize) || groupSize < 2) return { error: "Players per group must be at least 2." };
-  if (players.length < groupSize) return { error: `Add at least ${groupSize} players to fill one group.` };
+  if (!Number.isInteger(groupSize) || groupSize < 2) return { error: "Players per court must be at least 2." };
+  if (players.length < groupSize) return { error: `Add at least ${groupSize} players to fill one court.` };
   if (!Number.isInteger(courtCount) || courtCount < 1 || courtCount > 30) return { error: "Choose between 1 and 30 available courts." };
   if (!Number.isInteger(rounds) || rounds < 1 || rounds > 30) return { error: "Choose between 1 and 30 rounds." };
   return { players, groupSize, courtCount, rounds };

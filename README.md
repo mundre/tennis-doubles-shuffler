@@ -5,7 +5,7 @@ A responsive tennis scheduler that fills available courts with full groups, rota
 ## Features
 
 - Paste names one per line or separated by commas
-- Choose players per group (default: 4), available courts (default: 2), and 1–30 rounds
+- Choose players per court (default: 4), available courts (default: 2), and 1–30 rounds
 - Uses only courts that can be filled with a complete group
 - Rotates sit-outs so a player does not sit again before others have had a turn when one person sits out per round
 - Balances sit-outs across players when multiple people sit each round
